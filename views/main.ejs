@@ -1,0 +1,49 @@
+<%- include('./header.ejs'); -%>
+
+
+<div class="container">
+    <div class="msg_list">
+        <legend>Emails sent</legend>
+        <hr style="color:black";>
+        <div>
+        </div>
+    </div>
+    <div class="msg_bloc">
+        <!-- <form  method="POST" enctype="multipart/form-data"> -->
+            <div class="mail_logo">
+                <button class="mail_button" aria-expanded="false"><i class="fa fa-mail-bulk"></i></button>
+                <legend>Send a mail</legend>
+            </div>
+            <div class="mailing_bloc">
+                <div>
+                    <label for="to">To...</label>
+                    <input type="text" name="to" id="to" placeholder="TO:" required>
+                    <h4 id="to_error"></h4>
+                </div>
+                <div>
+                    <label for="sub">Subject</label>
+                    <input type="text" name="sub" id="sub" placeholder="Subject">
+                </div>
+                <div>
+                    <textarea name="mail_body" id="mail_body">TYPE YOUR MAIL HERE.....</textarea>
+                </div>
+                <div class="upload-file">
+                    <label for="file_up">
+                        <i class="far fa-file-alt"></i>
+                        Attach File
+                    </label>
+                    <h4 id="fileList"></h4>
+                    <input type="file"  id="file_up" multiple onchange="updateList()" />
+                </div>
+                <div class="sbuttons">
+                    <button id="mailSend">SEND</button>
+                    <button id="mailSchedule">SCHEDULE</button>
+                    <div class="s_mail">
+                        <input type="datetime-local" name="s_time" id="s_time" value="2017-06-13T13:00" disabled>
+                    </div>
+                </div>
+            </div>
+        <!-- </form> -->
+    </div>
+</div>
+<script src="mail.js"></script>
