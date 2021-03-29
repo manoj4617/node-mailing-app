@@ -39,7 +39,6 @@ sendButton.addEventListener('click', async (e) => {
   const fileSend = document.querySelector('#file_up').value;
   let schedule = document.querySelector('#s_time').value;
   const toError = document.querySelector('#to_error');
-
   if(schedule == "2017-06-13T13:00"){
     schedule = "";
   }
@@ -66,12 +65,4 @@ sendButton.addEventListener('click', async (e) => {
       console.log(err);
     }
   }
-
-  // console.log("to addr"  , toSend);
-  // console.log("subject" , subject);
-  // console.log("mail body" , mailBody);
-  // console.log("file" , fileSend);
-  // console.log("schedule time" , schedule);
-
-
 });

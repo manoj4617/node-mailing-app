@@ -6,14 +6,14 @@ const server = require("http").Server(app);
 const cookieParser = require('cookie-parser');
 const { requireAuth, checkUser } = require('./middleware/middle');
 
-const dburi = 'mongodb+srv://manoj4617:Manoj4617@cluster0.kktfa.mongodb.net/mailer';
+const dburi = 'mongodb+srv://manoj4617:Manoj4617@cluster0.kktfa.mongodb.net/nodemail';
 mongoose.connect(dburi, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
     .then((result)=>{
         server.listen(process.env.PORT || 4000);
         console.log("connected to database")
     })
     .catch((error)=> console.error(error));
-
+mongoose.set('useFindAndModify', false);
 app.use(cookieParser());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');

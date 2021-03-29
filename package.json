@@ -17,6 +17,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.19",
     "nodemailer": "^6.5.0",
+    "sort-json-array": "^0.1.7",
     "validator": "^13.5.2"
   }
 }

@@ -17,6 +17,11 @@ const userSchema = new mongoose.Schema({
     },
     emailSent:[
         {
+            to:{
+                type:String,
+                required:true
+            }
+            ,
             subject:{
                 type:String,
                 required:false,
@@ -34,6 +39,10 @@ const userSchema = new mongoose.Schema({
             dateTime:{
                 type:String,
                 required:true
+            },
+            schedule:{
+                type:String,
+                required:false
             }
         }
     ]

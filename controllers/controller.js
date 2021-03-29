@@ -1,7 +1,7 @@
-const  User  = require("../models/user");
 const jwt = require('jsonwebtoken');
 const nodemailer  = require('nodemailer');
-const user = require('../models/user')
+const User = require('../models/user');
+var sortJsonArray = require('sort-json-array');
 
 // handle errors
 const handleErrors = (err) => {
@@ -69,13 +69,14 @@ module.exports.signup_post = async (req, res) => {
 
   module.exports.login_post = async (req, res) => {
     const { email, password } = req.body;
-    
+    // var u = User.findOne({email}).sort({"emailSent.dateTime":-1});
+    // console.log("sorted emails",u);
     try {
-      const user = await User.login(email, password);
+      var user = await User.login(email, password);
       const token = createToken(user._id);
       res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
       res.status(200).json({ user: user._id });
-      res.render('main');
+      res.render('main',{user:user});
     }
     catch (err) {
       console.log(err)
@@ -89,39 +90,58 @@ module.exports.signup_post = async (req, res) => {
     res.redirect('/');
   }
 
-  module.exports.send_mail = (req, res) => {
+  module.exports.send_mail =async (req, res) => {
     console.log(req.body);
-    
-    nodemailer.createTestAccount((err, account)=>{
-      if(err){
-        console.log('Failed to create test account');
-        return process.exit(1);
+    let mailTransporter = nodemailer.createTransport({
+      service:'gmail',
+      auth:{
+        user: 'manojkumarbagewadi4617@gmail.com',
+        pass: 'Manoj 5051'
       }
-    });
-
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        auth: {
-            user: 'keon41@ethereal.email',
-            pass: '9uc88nzPGu78rmAu59'
-        }
-    });
+    })
 
     let message = {
-      from: user.email,
+      from: User.email,
       to: req.body.toSend,
       subject: req.body.subject,
       text: req.body.mailBody
     };
 
-    transporter.sendMail(message, (err,info)=>{
-      if(err){
-        console.log('error occured' , err.message);
-        return process.exit(1);
-      }
+    // mailTransporter.sendMail(message, (err,info)=>{
+    //   if(err){
+    //     console.log('error occured' , err.message);
+    //     return process.exit(1);
+    //   }
 
-      console.log(`Message sent ${info.messageId}`);
-      console.log(`Preview URL ${nodemailer.getTestMessageUrl(info)}`);
-    })
+    //   console.log(`Message sent ${info.messageId}`);
+    //   console.log(`Preview URL ${nodemailer.getTestMessageUrl(info)}`);
+      var d = new Date;
+      d = d.toUTCString()
+      d = d.slice(0,22)
+      // var datestring = ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +
+      //     d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+     var u = await User.findOneAndUpdate(
+          { _id : req.body.userInfo },
+          { $push:{"emailSent": [{
+              "to":req.body.toSend,
+              "subject": req.body.subject,
+              "mailBody":req.body.mailBody,
+              "files":req.body.fileSend,
+              "dateTime":d,
+              "schedule":req.body.schedule
+            }]
+          },
+            function (error, success) {
+              if (error) {
+                  console.log("error in inserting document",error);
+              } else {
+                  console.log("document was inserted" , success);
+              }
+          }
+        }
+      )
+      u = await User.find({_id : req.body.userInfo},"emailSent")
+      console.log(typeof(u),u)
+      res.status(200).json({ user: u});
+    // });
   }

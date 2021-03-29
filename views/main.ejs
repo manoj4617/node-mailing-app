@@ -5,7 +5,33 @@
     <div class="msg_list">
         <legend>Emails sent</legend>
         <hr style="color:black";>
-        <div>
+        <div class="email-list">
+            <!-- displaying the emails sent -->
+            <% let e = user.emailSent %> 
+            <div>
+                <% if (e) { %>
+                    <% for( let prop in e ) { %>
+                        <p>To: <%= e[prop].to %> </p>
+                        <% if (e[prop].subject == "") { %>
+                            <p>No Subject</p>
+                        <% } else { %>
+                            <p><a href="http:#"><%= e[prop].subject %></a></p>
+                        <% } %>
+                        <h5>Date: <%= e[prop].dateTime %> </h5>
+                        <div class="icons">
+                            <% if (e[prop].fileSend) { %>
+                                <i class="fa fa-file"></i>
+                            <% } %>
+                            <% if (e[prop].schedule != "NO") { %>
+                                <i class="fa fa-clock" title=<%= e[prop].schedule %> ></i>
+                            <% } %>
+                        </div>
+                        <hr>
+                    <% } %>
+                <% } else { %>
+                    <h3>You have not sent any emails</h3>
+                <% } %>
+            </div>
         </div>
     </div>
     <div class="msg_bloc">
@@ -46,4 +72,120 @@
         <!-- </form> -->
     </div>
 </div>
-<script src="mail.js"></script>
+<input type="hidden" id="userinfo" value="<%= user._id %>" >
+<script>
+    const mailButton = document.querySelector(".mail_button");
+    const mailList = document.querySelector(".msg_list");
+    const smail = document.getElementById('mailSchedule');
+    const setDateTime = document.querySelector("#s_time");
+
+
+    mailButton.addEventListener("click",() => {
+    if(mailList.classList.contains("active")){
+        mailButton.setAttribute("aria-expanded", "false");
+        mailList.classList.remove("active");
+    }
+    else {
+        mailList.classList.add("active");
+        mailButton.setAttribute("aria-expanded","true");
+    }
+    })
+
+    smail.addEventListener("click", ()=>{
+        setDateTime.disabled = false;
+    })
+
+    updateList = function() {
+    var input = document.querySelector('#file_up');
+    var output = document.getElementById('fileList');
+
+    output.innerHTML = '<ul>';
+    for (var i = 0; i < input.files.length; ++i) {
+        output.innerHTML += '<li>' + input.files.item(i).name + '</li>';
+    }
+    output.innerHTML += '</ul>';
+    }
+
+    //getting the mail data
+    const sendButton = document.querySelector('#mailSend');
+    sendButton.addEventListener('click', async (e) => {
+    const toSend = document.querySelector('#to').value;
+    const subject = document.querySelector('#sub').value;
+    const mailBody = document.querySelector('#mail_body').value;
+    const fileSend = document.querySelector('#file_up').value;
+    let schedule = document.querySelector('#s_time').value;
+    const toError = document.querySelector('#to_error');
+    var userInfo = document.querySelector('#userinfo').value;
+ 
+    if(schedule == "2017-06-13T13:00"){
+        schedule = "NO";
+    }
+    if(!toSend){
+        toError.innerHTML = "Provide the receiver's Email id";
+    }
+    else{
+            try{
+            const res = await fetch('/sendMail', {
+                method: 'POST',
+                body: JSON.stringify({
+                userInfo,
+                toSend,
+                subject,
+                mailBody,
+                fileSend,
+                schedule
+                }),
+                headers:{'Content-Type': 'application/json'}
+            });
+                const data = await res.json();
+                    const emailList = document.querySelector('.email-list');
+                    var e = data.user;
+                    var emails = e[0].emailSent[e[0].emailSent.length - 1];
+                    // console.log(emails)
+                    const d = document.createElement('div');
+                    const p = document.createElement('p');
+                    const pa = document.createElement('p');
+                    const a = document.createElement('a');
+                    const h = document.createElement('h5');
+                    const i = document.createElement('i');
+                    const iFile = document.createElement('i');
+                    const line = document.createElement('hr');
+                    const icons = document.createElement('div');
+                    icons.classList.add("icons");
+
+                    p.innerHTML = `To:${emails.to}`;
+                    d.appendChild(p);
+                    if(emails.subject == ""){
+                        pa.innerHTML = "No Subject";
+                        d.appendChild(pa);
+                    }
+                    else{
+                        a.innerHTML = emails.subject;
+                        a.href = "#";
+                        pa.appendChild(a);
+                        d.appendChild(pa);
+                    }
+                    h.innerHTML = `Date: ${emails.dateTime}`;
+                    d.appendChild(h);
+                    if(emails.schedule != "NO"){
+                        i.classList.add("fa")
+                        i.classList.add("fa-clock")
+                        i.title = emails.schedule;
+                        icons.appendChild(i)
+                        d.appendChild(icons)
+                    }
+                    if(emails.fileSend != null){
+                        iFile.classList.add("fa")
+                        iFile.classList.add("fa-file")
+                        icons.appendChild(iFile)
+                        d.appendChild(icons)
+                    }
+                    d.appendChild(line);
+                    emailList.appendChild(d)
+                }
+                catch(err){
+                console.log(err);
+            }
+        }
+    });
+</script>

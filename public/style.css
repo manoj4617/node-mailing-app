@@ -261,14 +261,44 @@ body{
     margin: 20px;
     padding:10px;
   }
+  .msg_list::-webkit-scrollbar {
+    display: none;
+}
   .msg_list{
     flex: 1;
     order: 1;
     border:none;
     border-radius:10px;
     background-color: #3BF534;
+    max-height: 600px;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;
+  }
+  .msg_list legend{
+    position: sticky;
   }
 
+  .email-list{
+    position: relative;
+  }
+  .email-list div{
+    padding: 0;
+    font-size:22px;
+  }
+  .email-list a{
+    text-decoration:none;
+    color: #FC6604;
+  }
+  .email-list a:hover{
+    color: black;
+    transition: 300ms ease-in;
+  }
+  .icons{
+    margin-left:90%;
+    margin-top: 0;
+  }
   .msg_bloc{
     flex: 2;
     order:2;
@@ -306,13 +336,14 @@ body{
       right: 0;
       left: 0;
       z-index:9;
-      background-color: #FE04CD;
+      background-color: #89fe04;
       visibility: hidden;
       opacity: 0;
       border:none;
       border-radius: 15px;
       transform: translateX(-100%);
-      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      transition:  0.3s ease-out;
+      opacity:   0.3s ease-out;
     }
     .msg_list.active {
         visibility: visible;
