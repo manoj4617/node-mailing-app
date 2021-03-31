@@ -31,10 +31,10 @@ const userSchema = new mongoose.Schema({
                 required:false,
             },
             files:{
-                desc:String,
                 required:false,
                 data:Buffer,
-                contentType: String
+                contentType: String,
+                filename:String
             },
             dateTime:{
                 type:String,

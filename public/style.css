@@ -283,6 +283,7 @@ body{
   .email-list{
     position: relative;
   }
+
   .email-list div{
     padding: 0;
     font-size:22px;
@@ -296,8 +297,12 @@ body{
     transition: 300ms ease-in;
   }
   .icons{
-    margin-left:90%;
+    width: 100%;
+    margin-right:90%;
     margin-top: 0;
+  }
+  .icons i{
+    margin-right:10px;
   }
   .msg_bloc{
     flex: 2;
@@ -431,3 +436,4 @@ body{
  font-size: 32px;
  transition: 300ms all ease-in-out;
 }
+

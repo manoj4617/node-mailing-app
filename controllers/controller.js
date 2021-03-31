@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
 const nodemailer  = require('nodemailer');
 const User = require('../models/user');
-var sortJsonArray = require('sort-json-array');
+const app = require('../index')
+const fs = require('fs');
+const path = require('path');
 
 // handle errors
 const handleErrors = (err) => {
@@ -76,6 +78,7 @@ module.exports.signup_post = async (req, res) => {
       const token = createToken(user._id);
       res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
       res.status(200).json({ user: user._id });
+      console.log(user)
       res.render('main',{user:user});
     }
     catch (err) {
@@ -90,8 +93,8 @@ module.exports.signup_post = async (req, res) => {
     res.redirect('/');
   }
 
-  module.exports.send_mail =async (req, res) => {
-    console.log(req.body);
+  module.exports.send_mail = async (req, res) => {
+    console.log(req.file);
     let mailTransporter = nodemailer.createTransport({
       service:'gmail',
       auth:{
@@ -118,15 +121,20 @@ module.exports.signup_post = async (req, res) => {
       var d = new Date;
       d = d.toUTCString()
       d = d.slice(0,22)
-      // var datestring = ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +
-      //     d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+      if(req.file){
+        var f = {
+          data:fs.readFileSync(path.join(__dirname,'..','public/file-storage',req.file.filename)),
+          contentType:req.file.mimetype,
+          filename : req.file.filename
+        }
+      }
      var u = await User.findOneAndUpdate(
-          { _id : req.body.userInfo },
+          { _id : req.body.userinfo },
           { $push:{"emailSent": [{
               "to":req.body.toSend,
               "subject": req.body.subject,
               "mailBody":req.body.mailBody,
-              "files":req.body.fileSend,
+              "files":f,
               "dateTime":d,
               "schedule":req.body.schedule
             }]
@@ -140,8 +148,7 @@ module.exports.signup_post = async (req, res) => {
           }
         }
       )
-      u = await User.find({_id : req.body.userInfo},"emailSent")
-      console.log(typeof(u),u)
+      u = await User.find({_id : req.body.userinfo},"emailSent")
       res.status(200).json({ user: u});
     // });
   }
