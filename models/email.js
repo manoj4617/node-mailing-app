@@ -1,19 +1,24 @@
-const mongoose = require('mongoose');
+const nodemailer = require('nodemailer');
+const nodemailerCramMd5 = require('nodemailer-cram-md5');
 
-const emailSchema = new mongoose.Schema({
-    subject:{
-        type:String,
-        required:false,
+let transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        type: 'custom',
+        method: 'CRAM-MD5',
+        user: 'manojkumarbagewadi4617@gmail.com',
+        pass: 'Manoj 5051'
     },
-    mailBody:{
-        type:String,
-        required:false,
-    },
-    files:{
-        desc:String,
-        data:Buffer,
-        contentType: String
+    customAuth: {
+        'CRAM-MD5': nodemailerCramMd5
     }
 });
 
-module.exports = emailSchema;
+transporter.sendMail({
+    from: 'manojsainikwod4617@gmail.com',
+    to: 'synslyare@gmail.com',
+    subject: 'hello world!',
+    text: 'hello!'
+}, console.log)

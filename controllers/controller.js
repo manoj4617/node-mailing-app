@@ -4,6 +4,7 @@ const User = require('../models/user');
 const app = require('../index')
 const fs = require('fs');
 const path = require('path');
+const mailIt = require('./mail_IT')
 
 // handle errors
 const handleErrors = (err) => {
@@ -78,7 +79,6 @@ module.exports.signup_post = async (req, res) => {
       const token = createToken(user._id);
       res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
       res.status(200).json({ user: user._id });
-      console.log(user)
       res.render('main',{user:user});
     }
     catch (err) {
@@ -93,62 +93,73 @@ module.exports.signup_post = async (req, res) => {
     res.redirect('/');
   }
 
+  const timeDifference = (hrs,min)=>{
+    let time = new Date();
+    let h = Math.abs(hrs - time.getHours()) * 3600 * 1000;
+    let m = Math.abs(min - time.getMinutes()) * 60 * 1000;
+    return (h + m);
+  }
   module.exports.send_mail = async (req, res) => {
-    console.log(req.file);
-    let mailTransporter = nodemailer.createTransport({
-      service:'gmail',
-      auth:{
-        user: 'manojkumarbagewadi4617@gmail.com',
-        pass: 'Manoj 5051'
+    // console.log(req.body)
+    if(req.body.scheduleDate != 'NO'){
+      var today = new Date();
+      var x = `${today.getDate()}/${today.getMonth()+1}/${today.getFullYear()}`
+      today = new Date(x)
+      var s = new Date(req.body.scheduleDate)
+      var timeDiff = (s.getTime() - today.getTime());
+      if(req.body.scheduleTime== ''){
+        var ti = today.toLocaleTimeString();
+        ti = ti.slice(0,5);
       }
-    })
-
-    let message = {
-      from: User.email,
-      to: req.body.toSend,
-      subject: req.body.subject,
-      text: req.body.mailBody
-    };
-
-    // mailTransporter.sendMail(message, (err,info)=>{
-    //   if(err){
-    //     console.log('error occured' , err.message);
-    //     return process.exit(1);
-    //   }
-
-    //   console.log(`Message sent ${info.messageId}`);
-    //   console.log(`Preview URL ${nodemailer.getTestMessageUrl(info)}`);
-      var d = new Date;
-      d = d.toUTCString()
-      d = d.slice(0,22)
-      if(req.file){
-        var f = {
-          data:fs.readFileSync(path.join(__dirname,'..','public/file-storage',req.file.filename)),
-          contentType:req.file.mimetype,
-          filename : req.file.filename
-        }
+      var time = new Date();
+      console.log(req.body.scheduleTime , time)
+      var hrs = parseInt(req.body.scheduleTime.slice(0,2));
+      var mins = parseInt(req.body.scheduleTime.slice(3,5));
+      var t = timeDifference(hrs,mins);
+      if(timeDiff == 0){
+        setTimeout(()=>{mailIt(req.body,req.file)},t);
       }
-     var u = await User.findOneAndUpdate(
-          { _id : req.body.userinfo },
-          { $push:{"emailSent": [{
-              "to":req.body.toSend,
-              "subject": req.body.subject,
-              "mailBody":req.body.mailBody,
-              "files":f,
-              "dateTime":d,
-              "schedule":req.body.schedule
-            }]
-          },
-            function (error, success) {
-              if (error) {
-                  console.log("error in inserting document",error);
-              } else {
-                  console.log("document was inserted" , success);
-              }
-          }
-        }
-      )
-      u = await User.find({_id : req.body.userinfo},"emailSent")
-      res.status(200).json({ user: u});
-    // });
+      else{
+        let finalTimeDifference = timeDiff + t;
+        setTimeout(()=>{mailIt(req.body,req.file)},finalTimeDifference)
+      }
+    }
+    else{
+      setTimeout(()=>{mailIt(req.body,req.file)},0);
+    }
+    if(req.file){
+      var f = {
+        data:fs.readFileSync(path.join(__dirname,'..','public/file-storage',req.file.filename)),
+        contentType:req.file.mimetype,
+        filename : req.file.filename
+      }
+    }
+    else{
+      f = null;
+    }
+
+    //   var d = new Date;
+    //   d = d.toLocaleString()
+    //  var u = await User.findOneAndUpdate(
+    //       { _id : req.body.userinfo },
+    //       { $push:{"emailSent": [{
+    //           "to":req.body.toSend,
+    //           "subject": req.body.subject,
+    //           "mailBody":req.body.mailBody,
+    //           "files":f,
+    //           "dateTime":d,
+    //           "schedule":req.body.schedule
+    //         }]
+    //       },
+    //         function (error, success) {
+    //           if (error) {
+    //               console.log("error in inserting document",error);
+    //           } else {
+    //               console.log("document was inserted" , success);
+    //           }
+    //       }
+    //     }
+    //   )
+    //   u = await User.find({_id : req.body.userinfo},"emailSent")
+    //   res.status(200).json({ user: u});
   }

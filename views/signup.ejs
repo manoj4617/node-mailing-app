@@ -1,18 +1,9 @@
 <%- include('./header.ejs'); -%>
 <script>
-    var check = function () {
-            if (document.getElementById('password').value == document.getElementById('con_password').value) {
-                document.querySelector('.con_password.error').style.color = 'green';
-                document.querySelector('.con_password.error').innerHTML = 'Matching';
-            }
-            else {
-                document.querySelector('.con_password.error').style.color = 'red';
-                document.querySelector('.con_password.error').innerHTML = 'Not Matching';
-            }
-        }
+    
 </script>
 <div class="signup_container">
-        <legend>SIGIN UP</legend>
+        <legend>SIGIN UP WITH GOOGLE ID</legend>
         <form>
             <div>
                 <label for="email">Email</label><br>
@@ -21,21 +12,33 @@
             </div>
             <div>
                 <label for="password">Password</label><br>
-                <input type="text" name="password" id="password" placeholder="Set a password" onkeyup="check()">
+                <input type="text" name="password" id="password" placeholder="Set a password">
                 <div class="password error"></div>
             </div>
             <div>
                 <label for="con_password">Confirm Password</label><br>
-                <input type="password" name="con_password" placeholder="Confirm Password" id="con_password">
+                <input type="password" name="con_password" placeholder="Confirm Password" id="con_password"  onkeyup="check()">
                 <div class="con_password error"></div>
             </div>
             <div>
-                <input type="submit" value="Sign up">
+                <input type="submit" value="Sign up" id="signup">
             </div>
         </form>
 </div>
 </body>
 <script>
+    var check = function () {
+            if (document.getElementById('password').value == document.getElementById('con_password').value) {
+                document.querySelector('.con_password.error').style.color = 'green';
+                document.querySelector('.con_password.error').innerHTML = 'Matching';
+                document.querySelector('#signup').removeAttribute('disabled','disabled');
+            }
+            else {
+                document.querySelector('.con_password.error').style.color = 'red';
+                document.querySelector('.con_password.error').innerHTML = 'Not Matching';
+                document.querySelector('#signup').setAttribute('disabled','disabled');
+            }
+        }
     const form = document.querySelector('form');
     const emailError = document.querySelector('.email.error');
     const passwordError = document.querySelector('.password.error');
