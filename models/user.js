@@ -40,7 +40,11 @@ const userSchema = new mongoose.Schema({
                 type:String,
                 required:true
             },
-            schedule:{
+            scheduleDate:{
+                type:String,
+                required:false
+            },
+            scheduleTime:{
                 type:String,
                 required:false
             }

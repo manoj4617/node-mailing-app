@@ -117,15 +117,15 @@ module.exports.signup_post = async (req, res) => {
       var mins = parseInt(req.body.scheduleTime.slice(3,5));
       var t = timeDifference(hrs,mins);
       if(timeDiff == 0){
-        setTimeout(()=>{mailIt(req.body,req.file)},t);
+         setTimeout(()=>{ mailIt(req.body,req.file)},t);
       }
       else{
         let finalTimeDifference = timeDiff + t;
-        setTimeout(()=>{mailIt(req.body,req.file)},finalTimeDifference)
+         setTimeout(()=>{ mailIt(req.body,req.file)},finalTimeDifference)
       }
     }
     else{
-      setTimeout(()=>{mailIt(req.body,req.file)},0);
+       setTimeout(()=>{ mailIt(req.body,req.file)},0);
     }
     if(req.file){
       var f = {
@@ -138,28 +138,29 @@ module.exports.signup_post = async (req, res) => {
       f = null;
     }
 
-    //   var d = new Date;
-    //   d = d.toLocaleString()
-    //  var u = await User.findOneAndUpdate(
-    //       { _id : req.body.userinfo },
-    //       { $push:{"emailSent": [{
-    //           "to":req.body.toSend,
-    //           "subject": req.body.subject,
-    //           "mailBody":req.body.mailBody,
-    //           "files":f,
-    //           "dateTime":d,
-    //           "schedule":req.body.schedule
-    //         }]
-    //       },
-    //         function (error, success) {
-    //           if (error) {
-    //               console.log("error in inserting document",error);
-    //           } else {
-    //               console.log("document was inserted" , success);
-    //           }
-    //       }
-    //     }
-    //   )
-    //   u = await User.find({_id : req.body.userinfo},"emailSent")
-    //   res.status(200).json({ user: u});
+      var d = new Date;
+      d = d.toLocaleString()
+      var u = await User.findOneAndUpdate(
+          { _id : req.body.userinfo },
+          { $push:{"emailSent": [{
+              "to":req.body.toSend,
+              "subject": req.body.subject,
+              "mailBody":req.body.mailBody,
+              "files":f,
+              "dateTime":d,
+              "scheduleDate":req.body.scheduleDate,
+              "scheduleTime":req.body.scheduleTime
+            }]
+          },
+            function (error, success) {
+              if (error) {
+                  console.log("error in inserting document",error);
+              } else {
+                  console.log("document was inserted" , success);
+              }
+          }
+        }
+      )
+      u = await User.find({_id : req.body.userinfo},"emailSent")
+      res.status(200).json({ user: u});
   }
