@@ -25,8 +25,8 @@
                                     <i class="fa fa-file" title='<%= e[prop].files.filename%>' ></i>
                                 </a>
                             <% } %>
-                            <% if (e[prop].schedule != "NO") { %>
-                                <i class="fa fa-clock" title=<%= e[prop].schedule %> ></i>
+                            <% if (e[prop].scheduleDate != "NO") { %>
+                                <i class="fa fa-clock" title=<%= e[prop].scheduleDate %> ></i>
                             <% } %>
                         </div>
                         <h5>Date: <%= e[prop].dateTime %> </h5>
@@ -225,10 +225,10 @@
                             aDown.appendChild(iFile)
                             d.appendChild(aDown)
                         }
-                        if(emails.schedule != "NO"){
+                        if(emails.scheduleDate != "NO"){
                             i.classList.add("fa")
                             i.classList.add("fa-clock")
-                            i.title = emails.scheduleDate + emails.scheduleTime;
+                            i.title = `${emails.scheduleDate}-${emails.scheduleTime}`;
                             icons.appendChild(i)
                             d.appendChild(icons)
                         }
