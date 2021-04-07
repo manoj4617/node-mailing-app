@@ -538,7 +538,11 @@ body{
   top:65%;
   animation: line-three 5s infinite linear;
 }
-
+ #fileList li::marker{
+   color:crimson;
+   font-size:30px;
+   content:'\2713';
+ }
 @keyframes border-one {
   0%   {width:0;}
   10%  {width:100%;}
